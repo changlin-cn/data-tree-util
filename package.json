@@ -1,0 +1,52 @@
+{
+  "name": "data-tree-util",
+  "version": "0.0.0",
+  "description": "tree util",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "babel src -d dist",
+    "pb": "npm run test && npm run build && npm publish",
+    "precommit": "npm run test && lint-staged"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/changlin-cn/data-tree-util.git"
+  },
+  "keywords": "data-tree-util treeToArray treeFromArray findChildren ",
+  "author": "changlin",
+  "license": "MIT",
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run precommit"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.2.6",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "eslint": "^5.3.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jest": "^21.24.2",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-prettier": "^3.0.0",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "husky": "^1.1.2",
+    "jest": "^23.6.0",
+    "prettier": "^1.15.3",
+    "lint-staged": "^8.1.0"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.26.0"
+  }
+}
