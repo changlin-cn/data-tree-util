@@ -1,6 +1,7 @@
 # data-tree-util
 
 ## Usage
+[source code](https://github.com/changlin-cn/data-tree-util/blob/master/src/index.js)
 ```javascript
 npm install data-tree-util --save-dev
 
