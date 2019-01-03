@@ -171,7 +171,7 @@ test('findLeavesFromTree', () => {
 
     const result = findLeavesFromTree(tree);
     console.log(result);
-    expect(result.length).toBe(6);
+    expect(result.length).toBe(7);
     expect(result.find((n) => n.id === '1-1-1').test).toBe('1-1-1');
     expect(result.find((n) => n.id === '2').parentId).toBe(undefined);
     expect(result.find((n) => n.id === '1-1')).toBe(undefined);
