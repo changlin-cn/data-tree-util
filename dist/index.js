@@ -98,11 +98,31 @@ function treeToArray(arr, option) {
         _loop2(i);
     }
 
-    return result.map(function (_ref) {
-        var children = _ref[opt.childrenKey],
-            rest = (0, _objectWithoutProperties3.default)(_ref, [opt.childrenKey]);
+    if (opt.onlyLeavesReturn) {
+        return result.filter(function (n) {
+            var children = n[opt.childrenKey];
+            return !children || Array.isArray(children) && children.length === 0;
+        }).map(function (_ref) {
+            var children = _ref[opt.childrenKey],
+                rest = (0, _objectWithoutProperties3.default)(_ref, [opt.childrenKey]);
+            return rest;
+        });
+    }
+
+    return result.map(function (_ref2) {
+        var children = _ref2[opt.childrenKey],
+            rest = (0, _objectWithoutProperties3.default)(_ref2, [opt.childrenKey]);
         return rest;
     });
+}
+
+/**
+ * findLeavesFromTree
+ * @param {array} arr
+ * @param {object} option
+ */
+function findLeavesFromTree(arr, option) {
+    return treeToArray(arr, (0, _extends4.default)({}, option, { onlyLeavesReturn: true }));
 }
 
 /**
@@ -137,5 +157,6 @@ function findChildren(arr, id, option) {
 module.exports = {
     treeFromArray: treeFromArray,
     findChildren: findChildren,
-    treeToArray: treeToArray
+    treeToArray: treeToArray,
+    findLeavesFromTree: findLeavesFromTree
 };
