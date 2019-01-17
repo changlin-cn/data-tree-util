@@ -120,9 +120,4 @@ function findChildren(arr, id, option) {
     return result;
 }
 
-module.exports = {
-    treeFromArray,
-    findChildren,
-    treeToArray,
-    findLeavesFromTree,
-};
+export { treeFromArray, findChildren, treeToArray, findLeavesFromTree };

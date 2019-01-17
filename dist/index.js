@@ -1,5 +1,10 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.findLeavesFromTree = exports.treeToArray = exports.findChildren = exports.treeFromArray = undefined;
+
 var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
@@ -154,9 +159,7 @@ function findChildren(arr, id, option) {
     return result;
 }
 
-module.exports = {
-    treeFromArray: treeFromArray,
-    findChildren: findChildren,
-    treeToArray: treeToArray,
-    findLeavesFromTree: findLeavesFromTree
-};
+exports.treeFromArray = treeFromArray;
+exports.findChildren = findChildren;
+exports.treeToArray = treeToArray;
+exports.findLeavesFromTree = findLeavesFromTree;
