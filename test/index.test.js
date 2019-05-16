@@ -3,6 +3,7 @@ const {
     findChildren,
     treeToArray,
     findLeavesFromTree,
+    findAncestors,
 } = require('../src/index');
 
 test('treeFromArray', () => {
@@ -214,5 +215,45 @@ test('findChildren', () => {
     const result = findChildren(data, '1');
     console.log(result);
     expect(result.length).toBe(6);
+    expect(result.find((n) => n.id === '1-1-1').test).toBe('111');
+});
+
+test('findAncestors', () => {
+    const data = [
+        {
+            id: '1',
+            parentId: null,
+        },
+
+        {
+            id: '1-1-1',
+            test: '111',
+            parentId: '1-1',
+        },
+        {
+            id: '1-2',
+            parentId: '1',
+        },
+        {
+            id: '1-2-1',
+            parentId: '1-2',
+        },
+        {
+            id: '1-1-2',
+            parentId: '1-1',
+        },
+        {
+            id: '1-1-3',
+            parentId: '1-1',
+        },
+        {
+            id: '1-1',
+            parentId: '1',
+        },
+    ];
+
+    const result = findAncestors(data, '1-1-1');
+    console.log(result);
+    expect(result.length).toBe(3);
     expect(result.find((n) => n.id === '1-1-1').test).toBe('111');
 });

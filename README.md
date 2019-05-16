@@ -10,6 +10,7 @@ const {
     findChildren,
     treeToArray,
     findLeavesFromTree,
+    findAncestors,
 } = require('data-tree-util');
 
 const data = [

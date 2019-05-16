@@ -1,6 +1,6 @@
 {
   "name": "data-tree-util",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "tree util",
   "main": "dist/index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "type": "git",
     "url": "https://github.com/changlin-cn/data-tree-util.git"
   },
-  "keywords": "data-tree-util treeToArray treeFromArray findChildren ",
+  "keywords": ["data-tree-util","treeToArray","treeFromArray","findChildren "],
   "author": "changlin",
   "license": "MIT",
   "husky": {
