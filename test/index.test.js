@@ -4,6 +4,7 @@ const {
     treeToArray,
     findLeavesFromTree,
     findAncestors,
+    getPathFromTree,
 } = require('../src/index');
 
 test('treeFromArray', () => {
@@ -256,4 +257,62 @@ test('findAncestors', () => {
     console.log(result);
     expect(result.length).toBe(3);
     expect(result.find((n) => n.id === '1-1-1').test).toBe('111');
+});
+
+test('getPathFromTree', () => {
+    const tree = [
+        {
+            id: '1',
+            children: [
+                {
+                    id: '1-1',
+                    children: [
+                        {
+                            id: '1-1-1',
+                            test: '1-1-1',
+                        },
+                        {
+                            id: '1-1-2',
+                            test: '1-1-2',
+                        },
+                        {
+                            id: '1-1-3',
+                        },
+                    ],
+                },
+                {
+                    id: '1-2',
+
+                    children: [
+                        {
+                            id: '1-2-1',
+                        },
+                        {
+                            id: '1-2-2',
+                        },
+                    ],
+                },
+                {
+                    id: '1-3',
+                },
+            ],
+        },
+        {
+            id: '2',
+            children: [
+                {
+                    id: '2-1',
+                },
+                {
+                    id: '2-2',
+                },
+            ],
+        },
+    ];
+    expect(getPathFromTree(tree, '1')).toEqual([0]);
+
+    expect(getPathFromTree(tree, '1-1-3')).toEqual([0, 0, 2]);
+    expect(getPathFromTree(tree, '1-2-2')).toEqual([0, 1, 1]);
+    expect(getPathFromTree(tree, '2-2')).toEqual([1, 1]);
+    expect(() => getPathFromTree(tree, '5-3')).toThrowError();
 });
