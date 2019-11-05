@@ -43,8 +43,17 @@ function treeFromArray(arr, option) {
             const parent = temp.find(
                 (n) => n[opt.idKey] === item[opt.parentIdKey],
             );
-            if (!Array.isArray(parent[opt.childrenKey])) {
-                parent[opt.childrenKey] = [];
+            try {
+                if (!Array.isArray(parent[opt.childrenKey])) {
+                    parent[opt.childrenKey] = [];
+                }
+            } catch (e) {
+                // debugger
+                throw new Error(
+                    `${e.message}. item.id:${item[opt.idKey]};item.parentId:${
+                        item[opt.parentIdKey]
+                    }`,
+                );
             }
             parent[opt.childrenKey].push(item);
         }

@@ -1,6 +1,6 @@
 {
   "name": "data-tree-util",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "tree util",
   "main": "dist/index.js",
   "scripts": {

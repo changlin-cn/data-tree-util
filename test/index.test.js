@@ -72,9 +72,16 @@ test('treeFromArray', () => {
         idKey: 'id2',
         childrenKey: 'cd',
     });
-    console.log(JSON.stringify(result2, null, 2));
+    // console.log(JSON.stringify(result2, null, 2));
     expect(result2.length).toBe(2);
     expect(result2.find((n) => n.cd && n.cd.length > 0).id2 === '1').toBe(true);
+    expect(() => {
+        treeFromArray([{ id: '2', parentId: '1' }]);
+    }).toThrow(
+        new Error(
+            `Cannot read property 'children' of undefined. item.id:2;item.parentId:1`,
+        ),
+    );
 });
 
 test('treeToArray', () => {
@@ -121,7 +128,7 @@ test('treeToArray', () => {
     ];
 
     const result = treeToArray(tree);
-    console.log(result);
+    // console.log(result);
     expect(result.length).toBe(10);
     expect(result.find((n) => n.id === '1-1-1').test === '1-1-1').toBe(true);
     expect(result.find((n) => n.id === '2').parentId).toBe(undefined);
@@ -172,7 +179,7 @@ test('findLeavesFromTree', () => {
     ];
 
     const result = findLeavesFromTree(tree);
-    console.log(result);
+    // console.log(result);
     expect(result.length).toBe(7);
     expect(result.find((n) => n.id === '1-1-1').test).toBe('1-1-1');
     expect(result.find((n) => n.id === '2').parentId).toBe(undefined);
@@ -214,7 +221,7 @@ test('findChildren', () => {
     ];
 
     const result = findChildren(data, '1');
-    console.log(result);
+    // console.log(result);
     expect(result.length).toBe(6);
     expect(result.find((n) => n.id === '1-1-1').test).toBe('111');
 });
@@ -254,7 +261,7 @@ test('findAncestors', () => {
     ];
 
     const result = findAncestors(data, '1-1-1');
-    console.log(result);
+    // console.log(result);
     expect(result.length).toBe(3);
     expect(result.find((n) => n.id === '1-1-1').test).toBe('111');
 });
