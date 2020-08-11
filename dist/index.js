@@ -61,11 +61,6 @@ var defaultGetPathFromTreeOpt = {
     }
 };
 
-/**
- * treeFromArray
- * @param {array} arr
- * @param {object} opt
- */
 function treeFromArraySlow(arr, option) {
     var opt = (0, _extends4.default)({}, defaultTreeFromArrayOpt, option);
     var temp = arr.map(function (n) {
@@ -99,6 +94,13 @@ function treeFromArraySlow(arr, option) {
     });
 }
 
+// 时间复杂度（treeFromArraySlow）：最好：O(3n)     最遭：O((n+1)*n)
+//  时间复杂度(treeFromArray)：O(n)
+/**
+ * treeFromArray
+ * @param {array} arr
+ * @param {object} opt
+ */
 function treeFromArray(arr, option) {
     var opt = (0, _extends4.default)({}, defaultTreeFromArrayOpt, option);
     var temp = arr.map(function (n) {
@@ -110,7 +112,7 @@ function treeFromArray(arr, option) {
     var itemRecordHasChirdren = {};
     var itemsNoParent = [];
     var itemsLost = {};
-
+    // 遍历所有节点，找出对应关系
     for (var i = 0; i < temp.length; i++) {
         var _item = temp[i];
         var hasParent = opt.hasParent(_item, opt.parentIdKey);
@@ -147,14 +149,14 @@ function treeFromArray(arr, option) {
             }
         }
     }
-
+    // 缺项抛出错误
     if (opt.lostError) {
         var ids = (0, _keys2.default)(itemsLost);
         if (ids.length) {
             throw new Error('Can\'t find items:[' + ids.join(',') + ']');
         }
     }
-
+    // 返回根节点元素
     return itemsNoParent;
 }
 
