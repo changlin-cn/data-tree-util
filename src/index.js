@@ -5,6 +5,7 @@ const defaultTreeFromArrayOpt = {
     hasParent(item, parentIdKey) {
         return item[parentIdKey];
     },
+    lostError: true,
 };
 const defaultTreeToArrayOpt = {
     childrenKey: 'children',
@@ -28,12 +29,7 @@ const defaultGetPathFromTreeOpt = {
     isIt: (item, id) => item.id === id,
 };
 
-/**
- * treeFromArray
- * @param {array} arr
- * @param {object} opt
- */
-function treeFromArray(arr, option) {
+function treeFromArraySlow(arr, option) {
     const opt = { ...defaultTreeFromArrayOpt, ...option };
     const temp = arr.map((n) => ({ ...n }));
 
@@ -60,6 +56,70 @@ function treeFromArray(arr, option) {
     }
 
     return temp.filter((n) => !opt.hasParent(n, opt.parentIdKey));
+}
+
+// 时间复杂度（treeFromArraySlow）：最好：O(3n)     最遭：O((n+1)*n)
+//  时间复杂度(treeFromArray)：O(n)
+/**
+ * treeFromArray
+ * @param {array} arr
+ * @param {object} opt
+ */
+function treeFromArray(arr, option) {
+    const opt = { ...defaultTreeFromArrayOpt, ...option };
+    const temp = arr.map((n) => ({ ...n }));
+
+    const groupsByParent = {};
+    const itemsMap = {};
+    const itemRecordHasChirdren = {};
+    const itemsNoParent = [];
+    const itemsLost = {};
+    // 遍历所有节点，找出对应关系
+    for (let i = 0; i < temp.length; i++) {
+        const item = temp[i];
+        const hasParent = opt.hasParent(item, opt.parentIdKey);
+        const parentId = item[opt.parentIdKey];
+        const id = item[opt.idKey];
+        if (!itemsMap[id]) {
+            itemsMap[id] = item;
+        }
+        if (hasParent) {
+            if (!groupsByParent[parentId]) {
+                groupsByParent[parentId] = [];
+                itemsLost[parentId] = true;
+            }
+            groupsByParent[parentId].push(item);
+
+            // 先遍历到了父节点，现在找到了子节点，建立关系
+            const parent = itemsMap[parentId];
+            if (parent) {
+                if (!parent[opt.childrenKey]) {
+                    parent[opt.childrenKey] = groupsByParent[parentId];
+                    delete itemsLost[parentId];
+                }
+            } else {
+                itemRecordHasChirdren[parentId] = true;
+            }
+        } else {
+            itemsNoParent.push(item);
+        }
+        // 先遍历到了子节点，现在找到了父节点，建立关系
+        if (itemRecordHasChirdren[id]) {
+            if (!item[opt.childrenKey]) {
+                item[opt.childrenKey] = groupsByParent[id];
+                delete itemsLost[id];
+            }
+        }
+    }
+    // 缺项抛出错误
+    if (opt.lostError) {
+        const ids = Object.keys(itemsLost);
+        if (ids.length) {
+            throw new Error(`Can't find items:[${ids.join(',')}]`);
+        }
+    }
+    // 返回根节点元素
+    return itemsNoParent;
 }
 
 /**
@@ -177,6 +237,7 @@ function getPathFromTree(arr = [], id, option = defaultGetPathFromTreeOpt) {
 }
 
 export {
+    treeFromArraySlow,
     treeFromArray,
     findChildren,
     treeToArray,

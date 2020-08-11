@@ -1,11 +1,14 @@
 const {
-    treeFromArray,
+    treeFromArraySlow,
     findChildren,
     treeToArray,
+    treeFromArray,
     findLeavesFromTree,
     findAncestors,
     getPathFromTree,
 } = require('../src/index');
+
+const dataBig = require('../performance/big.js').data;
 
 test('treeFromArray', () => {
     const data = [
@@ -54,7 +57,7 @@ test('treeFromArray', () => {
         },
     ];
     const result = treeFromArray(data);
-    console.log(JSON.stringify(result, null, 2));
+    // console.log(JSON.stringify(result, null, 2));
 
     expect(data.length).toBe(10);
     expect(result.length).toBe(2);
@@ -75,13 +78,47 @@ test('treeFromArray', () => {
     // console.log(JSON.stringify(result2, null, 2));
     expect(result2.length).toBe(2);
     expect(result2.find((n) => n.cd && n.cd.length > 0).id2 === '1').toBe(true);
-    expect(() => {
-        treeFromArray([{ id: '2', parentId: '1' }]);
-    }).toThrow(
-        new Error(
-            `Cannot read property 'children' of undefined. item.id:2;item.parentId:1`,
+
+    expect(
+        JSON.stringify(
+            treeFromArraySlow(dataBig, {
+                hasParent(item) {
+                    return item.parentId !== '0';
+                },
+            }),
+        ),
+    ).toEqual(
+        JSON.stringify(
+            treeFromArray(dataBig, {
+                hasParent(item) {
+                    return item.parentId !== '0';
+                },
+            }),
         ),
     );
+
+    // 某些项丢失报错
+    expect(() => {
+        treeFromArray([{ id: '2', parentId: '1' }]);
+    }).toThrow(new Error(`Can't find items:[1]`));
+
+    expect(() => {
+        treeFromArray([
+            { id: '2', parentId: '1' },
+            { id: '3', parentId: 'p3' },
+        ]);
+    }).toThrow(new Error(`Can't find items:[1,p3]`));
+    // 忽略项丢失报错
+    expect(
+        treeFromArray(
+            [
+                { id: '5' },
+                { id: '2', parentId: '1' },
+                { id: '3', parentId: 'p3' },
+            ],
+            { lostError: false },
+        ),
+    ).toEqual([{ id: '5' }]);
 });
 
 test('treeToArray', () => {

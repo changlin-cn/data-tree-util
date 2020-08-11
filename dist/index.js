@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.findLeavesFromTree = exports.treeToArray = exports.findChildren = exports.treeFromArray = undefined;
+exports.getPathFromTree = exports.findAncestors = exports.findLeavesFromTree = exports.treeToArray = exports.findChildren = exports.treeFromArray = exports.treeFromArraySlow = undefined;
 
 var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
 
@@ -17,6 +17,10 @@ var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
 var _extends3 = require('babel-runtime/helpers/extends');
 
 var _extends4 = _interopRequireDefault(_extends3);
@@ -29,7 +33,9 @@ var defaultTreeFromArrayOpt = {
     idKey: 'id',
     hasParent: function hasParent(item, parentIdKey) {
         return item[parentIdKey];
-    }
+    },
+
+    lostError: true
 };
 var defaultTreeToArrayOpt = {
     childrenKey: 'children',
@@ -41,9 +47,17 @@ var defaultFindChildrenOpt = {
     childrenKey: 'children',
     parentIdKey: 'parentId',
     idKey: 'id',
-    recursion: true,
-    hasParent: function hasParent(item, parentIdKey) {
-        return item[parentIdKey];
+    recursion: true
+};
+var defaultFindAncestorsOpt = {
+    parentIdKey: 'parentId',
+    idKey: 'id',
+    resultIncludeSelf: true
+};
+var defaultGetPathFromTreeOpt = {
+    childrenKey: 'children',
+    isIt: function isIt(item, id) {
+        return item.id === id;
     }
 };
 
@@ -52,7 +66,7 @@ var defaultFindChildrenOpt = {
  * @param {array} arr
  * @param {object} opt
  */
-function treeFromArray(arr, option) {
+function treeFromArraySlow(arr, option) {
     var opt = (0, _extends4.default)({}, defaultTreeFromArrayOpt, option);
     var temp = arr.map(function (n) {
         return (0, _extends4.default)({}, n);
@@ -64,8 +78,13 @@ function treeFromArray(arr, option) {
             var parent = temp.find(function (n) {
                 return n[opt.idKey] === item[opt.parentIdKey];
             });
-            if (!Array.isArray(parent[opt.childrenKey])) {
-                parent[opt.childrenKey] = [];
+            try {
+                if (!Array.isArray(parent[opt.childrenKey])) {
+                    parent[opt.childrenKey] = [];
+                }
+            } catch (e) {
+                // debugger
+                throw new Error(e.message + '. item.id:' + item[opt.idKey] + ';item.parentId:' + item[opt.parentIdKey]);
             }
             parent[opt.childrenKey].push(item);
         }
@@ -78,6 +97,65 @@ function treeFromArray(arr, option) {
     return temp.filter(function (n) {
         return !opt.hasParent(n, opt.parentIdKey);
     });
+}
+
+function treeFromArray(arr, option) {
+    var opt = (0, _extends4.default)({}, defaultTreeFromArrayOpt, option);
+    var temp = arr.map(function (n) {
+        return (0, _extends4.default)({}, n);
+    });
+
+    var groupsByParent = {};
+    var itemsMap = {};
+    var itemRecordHasChirdren = {};
+    var itemsNoParent = [];
+    var itemsLost = {};
+
+    for (var i = 0; i < temp.length; i++) {
+        var _item = temp[i];
+        var hasParent = opt.hasParent(_item, opt.parentIdKey);
+        var parentId = _item[opt.parentIdKey];
+        var id = _item[opt.idKey];
+        if (!itemsMap[id]) {
+            itemsMap[id] = _item;
+        }
+        if (hasParent) {
+            if (!groupsByParent[parentId]) {
+                groupsByParent[parentId] = [];
+                itemsLost[parentId] = true;
+            }
+            groupsByParent[parentId].push(_item);
+
+            // 先遍历到了父节点，现在找到了子节点，建立关系
+            var parent = itemsMap[parentId];
+            if (parent) {
+                if (!parent[opt.childrenKey]) {
+                    parent[opt.childrenKey] = groupsByParent[parentId];
+                    delete itemsLost[parentId];
+                }
+            } else {
+                itemRecordHasChirdren[parentId] = true;
+            }
+        } else {
+            itemsNoParent.push(_item);
+        }
+        // 先遍历到了子节点，现在找到了父节点，建立关系
+        if (itemRecordHasChirdren[id]) {
+            if (!_item[opt.childrenKey]) {
+                _item[opt.childrenKey] = groupsByParent[id];
+                delete itemsLost[id];
+            }
+        }
+    }
+
+    if (opt.lostError) {
+        var ids = (0, _keys2.default)(itemsLost);
+        if (ids.length) {
+            throw new Error('Can\'t find items:[' + ids.join(',') + ']');
+        }
+    }
+
+    return itemsNoParent;
 }
 
 /**
@@ -146,8 +224,8 @@ function findChildren(arr, id, option) {
     for (var i = 0; i < (opt.recursion ? result.length : 1); i++) {
         var _current = result[i];
         for (var j = 0; j < duplicate.length; j++) {
-            var _item = duplicate[j];
-            if (_item[opt.parentIdKey] === _current[opt.idKey]) {
+            var _item2 = duplicate[j];
+            if (_item2[opt.parentIdKey] === _current[opt.idKey]) {
                 result.push(duplicate.splice(j, 1)[0]);
                 j--;
             }
@@ -159,7 +237,77 @@ function findChildren(arr, id, option) {
     return result;
 }
 
+function findAncestors(arr, id, option) {
+    var opt = (0, _extends4.default)({}, defaultFindAncestorsOpt, option);
+    var resultIncludeSelf = opt.resultIncludeSelf,
+        idKey = opt.idKey,
+        parentIdKey = opt.parentIdKey;
+
+    var current = arr.find(function (n) {
+        return n[idKey] === id;
+    });
+    var result = resultIncludeSelf ? current ? [current] : [] : [];
+
+    var _loop3 = function _loop3(i) {
+        var item = i === 0 ? current : result[i];
+        var parent = arr.find(function (n) {
+            return n[idKey] === item[parentIdKey];
+        });
+        if (parent) {
+            result.push(parent);
+            return 'continue';
+        }
+        return 'break';
+    };
+
+    _loop4: for (var i = 0; i <= result.length; i++) {
+        var _ret3 = _loop3(i);
+
+        switch (_ret3) {
+            case 'continue':
+                continue;
+
+            case 'break':
+                break _loop4;}
+    }
+
+    return result;
+}
+
+function getPathFromTree() {
+    var arr = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var id = arguments[1];
+    var option = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultGetPathFromTreeOpt;
+    var childrenKey = option.childrenKey,
+        isIt = option.isIt;
+
+    var queue = [{ item: (0, _defineProperty3.default)({}, childrenKey, arr), path: '' }];
+    while (queue.length) {
+        var _current2 = queue.shift();
+        var _children = _current2.item[childrenKey],
+            path = _current2.path;
+
+        if (isIt(_current2.item, id) && path) {
+            return path.split('-').map(function (v) {
+                return Number(v);
+            });
+        }
+        if (Array.isArray(_children) && _children.length) {
+            for (var i = 0; i < _children.length; i++) {
+                queue.push({
+                    item: _children[i],
+                    path: '' + (path ? path + '-' : '') + i
+                });
+            }
+        }
+    }
+    throw new Error('Can not get path of ' + id);
+}
+
+exports.treeFromArraySlow = treeFromArraySlow;
 exports.treeFromArray = treeFromArray;
 exports.findChildren = findChildren;
 exports.treeToArray = treeToArray;
 exports.findLeavesFromTree = findLeavesFromTree;
+exports.findAncestors = findAncestors;
+exports.getPathFromTree = getPathFromTree;
