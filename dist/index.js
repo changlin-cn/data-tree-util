@@ -133,7 +133,7 @@ function treeFromArray(arr, option) {
             if (parent) {
                 if (!parent[opt.childrenKey]) {
                     parent[opt.childrenKey] = groupsByParent[parentId];
-                    delete itemsLost[parentId];
+                    itemsLost[parentId] = false;
                 }
             } else {
                 itemRecordHasChirdren[parentId] = true;
@@ -145,13 +145,15 @@ function treeFromArray(arr, option) {
         if (itemRecordHasChirdren[id]) {
             if (!_item[opt.childrenKey]) {
                 _item[opt.childrenKey] = groupsByParent[id];
-                delete itemsLost[id];
+                itemsLost[id] = false;
             }
         }
     }
     // 缺项抛出错误
     if (opt.lostError) {
-        var ids = (0, _keys2.default)(itemsLost);
+        var ids = (0, _keys2.default)(itemsLost).filter(function (k) {
+            return itemsLost[k];
+        });
         if (ids.length) {
             throw new Error('Can\'t find items:[' + ids.join(',') + ']');
         }
