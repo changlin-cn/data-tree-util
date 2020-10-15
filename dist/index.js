@@ -5,10 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getPathFromTree = exports.findAncestors = exports.findLeavesFromTree = exports.treeToArray = exports.findChildren = exports.treeFromArray = exports.treeFromArraySlow = undefined;
 
-var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
-
-var _defineProperty3 = _interopRequireDefault(_defineProperty2);
-
 var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
@@ -21,9 +17,13 @@ var _keys = require('babel-runtime/core-js/object/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
 
-var _extends3 = require('babel-runtime/helpers/extends');
+var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
 
-var _extends4 = _interopRequireDefault(_extends3);
+var _defineProperty3 = _interopRequireDefault(_defineProperty2);
+
+var _extends4 = require('babel-runtime/helpers/extends');
+
+var _extends5 = _interopRequireDefault(_extends4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -62,9 +62,9 @@ var defaultGetPathFromTreeOpt = {
 };
 
 function treeFromArraySlow(arr, option) {
-    var opt = (0, _extends4.default)({}, defaultTreeFromArrayOpt, option);
+    var opt = (0, _extends5.default)({}, defaultTreeFromArrayOpt, option);
     var temp = arr.map(function (n) {
-        return (0, _extends4.default)({}, n);
+        return (0, _extends5.default)({}, n);
     });
 
     var _loop = function _loop(i) {
@@ -102,9 +102,9 @@ function treeFromArraySlow(arr, option) {
  * @param {object} opt
  */
 function treeFromArray(arr, option) {
-    var opt = (0, _extends4.default)({}, defaultTreeFromArrayOpt, option);
+    var opt = (0, _extends5.default)({}, defaultTreeFromArrayOpt, option);
     var temp = arr.map(function (n) {
-        return (0, _extends4.default)({}, n);
+        return (0, _extends5.default)({}, n, (0, _defineProperty3.default)({}, opt.childrenKey, undefined));
     });
 
     var groupsByParent = {};
@@ -168,7 +168,7 @@ function treeFromArray(arr, option) {
  * @param {object} option
  */
 function treeToArray(arr, option) {
-    var opt = (0, _extends4.default)({}, defaultTreeToArrayOpt, option);
+    var opt = (0, _extends5.default)({}, defaultTreeToArrayOpt, option);
     var result = [].concat((0, _toConsumableArray3.default)(arr));
 
     var _loop2 = function _loop2(i) {
@@ -176,7 +176,7 @@ function treeToArray(arr, option) {
         var children = current[opt.childrenKey];
         if (Array.isArray(children)) {
             result = result.concat(children.map(function (n) {
-                return (0, _extends4.default)({}, n, (0, _defineProperty3.default)({}, opt.parentIdKey, current[opt.idKey]));
+                return (0, _extends5.default)({}, n, (0, _defineProperty3.default)({}, opt.parentIdKey, current[opt.idKey]));
             }));
         }
     };
@@ -209,7 +209,7 @@ function treeToArray(arr, option) {
  * @param {object} option
  */
 function findLeavesFromTree(arr, option) {
-    return treeToArray(arr, (0, _extends4.default)({}, option, { onlyLeavesReturn: true }));
+    return treeToArray(arr, (0, _extends5.default)({}, option, { onlyLeavesReturn: true }));
 }
 
 /**
@@ -220,7 +220,7 @@ function findLeavesFromTree(arr, option) {
  */
 function findChildren(arr, id, option) {
     var duplicate = [].concat((0, _toConsumableArray3.default)(arr));
-    var opt = (0, _extends4.default)({}, defaultFindChildrenOpt, option);
+    var opt = (0, _extends5.default)({}, defaultFindChildrenOpt, option);
 
     var result = [arr.find(function (n) {
         return n[opt.idKey] === id;
@@ -242,7 +242,7 @@ function findChildren(arr, id, option) {
 }
 
 function findAncestors(arr, id, option) {
-    var opt = (0, _extends4.default)({}, defaultFindAncestorsOpt, option);
+    var opt = (0, _extends5.default)({}, defaultFindAncestorsOpt, option);
     var resultIncludeSelf = opt.resultIncludeSelf,
         idKey = opt.idKey,
         parentIdKey = opt.parentIdKey;

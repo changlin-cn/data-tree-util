@@ -67,7 +67,7 @@ function treeFromArraySlow(arr, option) {
  */
 function treeFromArray(arr, option) {
     const opt = { ...defaultTreeFromArrayOpt, ...option };
-    const temp = arr.map((n) => ({ ...n }));
+    const temp = arr.map((n) => ({ ...n, [opt.childrenKey]: undefined }));
 
     const groupsByParent = {};
     const itemsMap = {};

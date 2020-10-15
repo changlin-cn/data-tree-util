@@ -121,6 +121,60 @@ test('treeFromArray', () => {
     ).toEqual([{ id: '5' }]);
 });
 
+test('treeFromArray: has children', () => {
+    const data = [
+        {
+            id: '1',
+            parentId: null,
+            children:[]
+        },
+
+        {
+            id: '1-1-1',
+            test: '111',
+            parentId: '1-1',
+        },
+        {
+            id: '1-2-1',
+            parentId: '1-2',
+        },
+        {
+            id: '1-1-2',
+            parentId: '1-1',
+        },
+        {
+            id: '1-1-3',
+            parentId: '1-1',
+        },
+        {
+            id: '1-1',
+            parentId: '1',
+        },
+        {
+            id: '1-2',
+            parentId: '1',
+        },
+
+        {
+            id: '1-2-2',
+            parentId: '1-2',
+        },
+        {
+            id: '1-3',
+            parentId: '1',
+        },
+        {
+            id: '2',
+            parentId: null,
+        },
+    ];
+    const result = treeFromArray(data);
+    // console.log(JSON.stringify(result, null, 2));
+
+    expect(data.length).toBe(10);
+    expect(result.length).toBe(2);
+});
+
 test('treeToArray', () => {
     const tree = [
         {
