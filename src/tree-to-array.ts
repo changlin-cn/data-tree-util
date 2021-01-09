@@ -11,8 +11,9 @@ const defaultTreeToArrayOpt = {
  * @param {object} option
  */
 
-type treeNode<T> = {
+export type treeNode<T> = {
   id: string | number;
+  parentId?: string | number;
   children?: treeNode<T>[];
 } & T;
 

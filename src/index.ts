@@ -1,13 +1,8 @@
 export { treeFromArray } from './tree-from-array';
 export { treeToArray } from './tree-to-array';
 export { findLeavesFromTree } from './find-leaves-from-tree';
+export { findChildren } from './find-children';
 
-const defaultFindChildrenOpt = {
-  childrenKey: 'children',
-  parentIdKey: 'parentId',
-  idKey: 'id',
-  recursion: true,
-};
 const defaultFindAncestorsOpt = {
   parentIdKey: 'parentId',
   idKey: 'id',
@@ -24,26 +19,6 @@ const defaultGetPathFromTreeOpt = {
  * @param {string | number} id
  * @param {object} option
  */
-function findChildren(arr, id, option) {
-  const duplicate = [...arr];
-  const opt = { ...defaultFindChildrenOpt, ...option };
-
-  const result = [arr.find((n) => n[opt.idKey] === id)];
-  for (let i = 0; i < (opt.recursion ? result.length : 1); i++) {
-    const current = result[i];
-    for (let j = 0; j < duplicate.length; j++) {
-      const item = duplicate[j];
-      if (item[opt.parentIdKey] === current[opt.idKey]) {
-        result.push(duplicate.splice(j, 1)[0]);
-        j--;
-      }
-    }
-    // result=arr.filter(n=>n)
-  }
-  result.shift();
-
-  return result;
-}
 
 function findAncestors(arr, id, option) {
   const opt = { ...defaultFindAncestorsOpt, ...option };
@@ -86,4 +61,4 @@ function getPathFromTree(arr = [], id, option = defaultGetPathFromTreeOpt) {
   throw new Error(`Can not get path of ${id}`);
 }
 
-export { findChildren, findAncestors, getPathFromTree };
+export { findAncestors, getPathFromTree };

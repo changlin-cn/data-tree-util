@@ -3,7 +3,7 @@ interface treeFromArrayOpt<T> {
   lostError: boolean;
 }
 
-type treeNodeSource = {
+export type treeNodeSource = {
   id: string | number;
   parentId: string | number;
 };
