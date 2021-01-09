@@ -13,8 +13,13 @@ export function findAncestors<T extends treeNodeSource>(
   option: { resultIncludeSelf: boolean } = { resultIncludeSelf: true },
 ): T[] {
   const { resultIncludeSelf } = option;
+  const dataMap: { [index: string]: T } = {};
 
-  const current = arr.find((n) => n.id === id);
+  arr.forEach((n) => {
+    dataMap[n.id] = n;
+  });
+
+  const current = dataMap[id];
   if (!current) {
     return [];
   }
@@ -22,7 +27,7 @@ export function findAncestors<T extends treeNodeSource>(
   const result = resultIncludeSelf ? (current ? [current] : []) : [];
   for (let i = 0; i <= result.length; i++) {
     const item = i === 0 ? current : result[i];
-    const parent = arr.find((n) => n.id === item.parentId);
+    const parent = dataMap[item.parentId];
     if (parent) {
       result.push(parent);
       continue;
