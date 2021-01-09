@@ -17,7 +17,7 @@ type treeNodeRes<T> = treeNodeSource & {
  * @param {array} arr
  * @param {object} opt
  */
-function treeFromArray<T extends treeNodeSource>(arr: T[], option?: treeFromArrayOpt<T>): treeNodeRes<T>[] {
+function treeFromArray<T extends treeNodeSource>(arr: T[], option?: Partial<treeFromArrayOpt<T>>): treeNodeRes<T>[] {
   const opt: treeFromArrayOpt<T> = {
     hasParent(item) {
       return item.parentId;

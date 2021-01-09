@@ -1,11 +1,7 @@
-export { treeFromArray } from './treeFromArray';
+export { treeFromArray } from './tree-from-array';
+export { treeToArray } from './tree-to-array';
+export { findLeavesFromTree } from './find-leaves-from-tree';
 
-const defaultTreeToArrayOpt = {
-  childrenKey: 'children',
-  parentIdKey: 'parentId',
-  idKey: 'id',
-  onlyLeavesReturn: false,
-};
 const defaultFindChildrenOpt = {
   childrenKey: 'children',
   parentIdKey: 'parentId',
@@ -21,49 +17,6 @@ const defaultGetPathFromTreeOpt = {
   childrenKey: 'children',
   isIt: (item, id) => item.id === id,
 };
-
-/**
- * treeToArray
- * @param {array} arr
- * @param {object} option
- */
-function treeToArray(arr, option) {
-  const opt = { ...defaultTreeToArrayOpt, ...option };
-  let result = [...arr];
-
-  for (let i = 0; i < result.length; i++) {
-    const current = result[i];
-    const children = current[opt.childrenKey];
-    if (Array.isArray(children)) {
-      result = result.concat(
-        children.map((n) => ({
-          ...n,
-          [opt.parentIdKey]: current[opt.idKey],
-        })),
-      );
-    }
-  }
-
-  if (opt.onlyLeavesReturn) {
-    return result
-      .filter((n) => {
-        const children = n[opt.childrenKey];
-        return !children || (Array.isArray(children) && children.length === 0);
-      })
-      .map(({ [opt.childrenKey]: children, ...rest }) => rest);
-  }
-
-  return result.map(({ [opt.childrenKey]: children, ...rest }) => rest);
-}
-
-/**
- * findLeavesFromTree
- * @param {array} arr
- * @param {object} option
- */
-function findLeavesFromTree(arr, option) {
-  return treeToArray(arr, { ...option, onlyLeavesReturn: true });
-}
 
 /**
  * findChildren
@@ -133,4 +86,4 @@ function getPathFromTree(arr = [], id, option = defaultGetPathFromTreeOpt) {
   throw new Error(`Can not get path of ${id}`);
 }
 
-export { findChildren, treeToArray, findLeavesFromTree, findAncestors, getPathFromTree };
+export { findChildren, findAncestors, getPathFromTree };

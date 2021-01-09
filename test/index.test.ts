@@ -7,6 +7,11 @@ import {
   getPathFromTree,
 } from '../src/index';
 
+interface treeNode {
+  id: string | number;
+  children?: treeNode[];
+  test?: string | number;
+}
 
 test('treeFromArray', () => {
   const data = [
@@ -139,7 +144,7 @@ test('treeFromArray: has children', () => {
 });
 
 test('treeToArray', () => {
-  const tree = [
+  const tree: treeNode[] = [
     {
       id: '1',
       children: [
@@ -182,6 +187,7 @@ test('treeToArray', () => {
   ];
 
   const result = treeToArray(tree);
+
   // console.log(result);
   expect(result.length).toBe(10);
   expect(result.find((n) => n.id === '1-1-1').test === '1-1-1').toBe(true);
@@ -190,7 +196,7 @@ test('treeToArray', () => {
 });
 
 test('findLeavesFromTree', () => {
-  const tree = [
+  const tree: treeNode[] = [
     {
       id: '1',
       children: [
