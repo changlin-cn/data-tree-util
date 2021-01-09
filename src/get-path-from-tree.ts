@@ -24,5 +24,3 @@ export function getPathFromTree<T>(arr: treeNode<T>[], id: string | number): num
   }
   throw new Error(`Can not get path of ${id}`);
 }
-
-console.log(getPathFromTree([{ id: 3, parentId: undefined, children: [{ id: 31, parentId: 3 }] }], 31));
